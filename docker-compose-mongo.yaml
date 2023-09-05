@@ -1,0 +1,16 @@
+# Use root/root as user/password credentials
+version: '3.1'
+
+services:
+  db:
+    image: mongo:4.4.24
+    ports:
+      - "27017:27017"
+    restart: always 
+    container_name: db_mongo_4_4_24
+    volumes:
+      - ./mongo_data:/data/db
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
