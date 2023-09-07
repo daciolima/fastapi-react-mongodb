@@ -2,7 +2,7 @@ from fastapi import HTTPException, status, APIRouter
 from fastapi.responses import JSONResponse
 from database import get_all_tasks, get_one_task_id, create_task, update_task, delete_task, get_one_task_title
 from errors import processing_failure
-from models import Task, UpdateTask
+from models import TaskRead, TaskWrite, UpdateTask
 
 task = APIRouter()
 
@@ -24,16 +24,16 @@ async def get_all():
 
 
 # Retorna uma task
-@task.get('/api/tasks/{id}')
+@task.get('/api/tasks/{id}', response_model=TaskRead)
 async def get_one(id: str):
     task = await get_one_task_id(id)
-    if len(task) == 0:
-        return JSONResponse(detail="Não existe item.", status_code=status.HTTP_404_NOT_FOUND)
-    return task
+    if task:
+        return task
+    raise HTTPException(404, f"Não existe task com esse ID: {id}")
 
 
-@task.post('/api/tasks', response_model=Task)
-async def create(task: Task):
+@task.post('/api/tasks', response_model=TaskWrite)
+async def create(task: TaskWrite):
     taskFound = await get_one_task_title(task.title)
     if taskFound:
         raise HTTPException(409, "Task com mesmo título já existe.")
@@ -44,7 +44,7 @@ async def create(task: Task):
     raise HTTPException(400, "Há algo de errado!")
 
 
-@task.put('/api/tasks/{id}', response_model=Task)
+@task.put('/api/tasks/{id}', response_model=TaskRead)
 async def update(id: str, data: UpdateTask):
     task = await update_task(id, data)
     if task:
@@ -52,7 +52,7 @@ async def update(id: str, data: UpdateTask):
     raise HTTPException(404, f"Não existe task com esse ID: {id}")
 
 
-@task.delete('/api/tasks/{id}')
+@task.delete('/api/tasks/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def remove_task(id: str):
     task = await delete_task(id)
     if task:

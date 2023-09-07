@@ -17,8 +17,23 @@ class PyObjectId(ObjectId):
         return str(v)
 
 
-class Task(BaseModel):
+class TaskRead(BaseModel):
     id: Optional[PyObjectId] = Field(alias='_id') 
+    title: str
+    description: Optional[str] = None
+    status: bool = False
+    created_at: datetime = datetime.now()
+    updated_at: datetime = datetime.now()
+
+    class Config:
+        orm_mode = True
+        populate_by_name = True
+        json_encoders = {
+            ObjectId: str
+        }
+
+
+class TaskWrite(BaseModel):
     title: str
     description: Optional[str] = None
     status: bool = False

@@ -2,17 +2,8 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from decouple import config
 import pymongo
-from models import Task
+from models import TaskRead, UpdateTask
 from bson import ObjectId
-
-
-# Config para MongoDB
-# user_mongo: settings.user_mongo
-# password_mongo: str = "root"
-# address_mongo: str = "localhost"
-# port_mongo: int = 27017
-# URI_MONGO: str = f"mongodb://{user_mongo}:{password_mongo}@{address_mongo}:{port_mongo}/?authMechanism=DEFAULT"
-
 
 try:
     # Conexão com o banco
@@ -49,7 +40,7 @@ async def get_all_tasks():
     tasks = []
     cursor = CollectionTask.find({})
     async for document in cursor:
-        tasks.append(Task(**document))
+        tasks.append(TaskRead(**document))
     return tasks
     # return [task async for task in CollectionTask.find({})]
 
@@ -60,14 +51,15 @@ async def create_task(task):
     return created_task
 
 # Atualizando um elemento
-async def update_task(id: str, task):
-    await CollectionTask.update_one({'_id': id}, {'$set': task})
-    document = await CollectionTask.find_one({'_id': id})
+async def update_task(id: str, data: UpdateTask):
+    task = {k: v for k, v in data.dict().items() if v is not None}
+    await CollectionTask.update_one({'_id': ObjectId(id)}, {'$set': task})
+    document = await CollectionTask.find_one({'_id': ObjectId(id)})
     return document
 
 # delete um elemento
 async def delete_task(id: str):
-    await CollectionTask.delete_one({'_id': id})
+    await CollectionTask.delete_one({'_id': ObjectId(id)})
     return True
 
 
