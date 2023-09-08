@@ -32,7 +32,7 @@ async def get_one(id: str):
     raise HTTPException(404, f"Não existe task com esse ID: {id}")
 
 
-@task.post('/api/tasks', response_model=TaskWrite)
+@task.post('/api/tasks', response_model=TaskRead)
 async def create(task: TaskWrite):
     taskFound = await get_one_task_title(task.title)
     if taskFound:
