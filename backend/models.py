@@ -18,7 +18,7 @@ class PyObjectId(ObjectId):
 
 
 class TaskRead(BaseModel):
-    id: Optional[PyObjectId] = Field(alias='_id') 
+    id: Optional[PyObjectId] = Field(alias='_id')
     title: str
     description: Optional[str] = None
     status: bool = False

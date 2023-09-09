@@ -11,7 +11,7 @@ app = FastAPI()
 print(config("FRONTEND_URL"))
 
 origins = [
-    config("FRONTEND_URL"),
+    config("FRONTEND_URL"), "*"
 ]
 
 app.add_middleware(

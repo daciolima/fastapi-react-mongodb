@@ -6,7 +6,10 @@ services:
     image: mongo:4.4.24
     ports:
       - "27017:27017"
-    restart: always 
+    restart: no # Up ou down de forma manual independente de se houver falha 
+    # restart: always # Será reiniciado sempre. Se Ocorrer falha ele irá tentar subir automaticamente.
+    # restart: on-failure # O container irá reiniciar automaticamente apenas se houver falha. 
+    # restart: unless-stopped # O container será reiniciado automaticamente, a menos que você o pare manualmente. Recomendado para serviços que devem reiniciar junto com o host. 
     container_name: db_mongo_4_4_24
     volumes:
       - ./mongo_data:/data/db

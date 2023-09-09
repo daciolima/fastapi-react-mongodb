@@ -9,6 +9,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />}/>
         <Route path="/about" element={<About />}/>
+        <Route path="/tasks/:id" element={<CadastroTask />}/>
         <Route path="/cadastro-task" element={<CadastroTask />}/>
       </Routes>
     </BrowserRouter>

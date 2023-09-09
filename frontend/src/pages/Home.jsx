@@ -1,9 +1,26 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import TaskList from '../components/TaskList';
+
 
 function Home() {
+
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    async function fetchTasks() {
+      const res = await axios.get("http://localhost:8080/api/tasks");
+      setTasks(res.data)
+    }
+    
+    fetchTasks();
+  
+  }, [])
+
   return (
     <div>
-        <h1 className='text-3xl font-bold'>Home</h1>
+        <h1>Home</h1>
+        <TaskList tasks={tasks}/>
     </div>
   )
 }

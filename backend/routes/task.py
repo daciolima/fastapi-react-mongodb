@@ -17,9 +17,6 @@ def welcome():
 @task.get('/api/tasks')
 async def get_all():
     tasks = await get_all_tasks()
-    if len(tasks) == 0:
-        data = {"detail": "Não existe item cadastrado."}
-        return JSONResponse(content=data, status_code=status.HTTP_404_NOT_FOUND)
     return tasks
 
 

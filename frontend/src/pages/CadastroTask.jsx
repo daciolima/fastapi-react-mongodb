@@ -1,10 +1,10 @@
 import React from 'react'
-import Form from '../components/Form'
+import TaskForm from '../components/TaskForm'
 
 export default function CadastroTask() {
   return (
     <div>
-        <Form />
+        <TaskForm />
     </div>
   )
 }
