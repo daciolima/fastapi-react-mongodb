@@ -16,6 +16,10 @@ class PyObjectId(ObjectId):
             raise ValueError('ObjectId Inválido')
         return str(v)
 
+    @classmethod
+    def __modify_schema__(cls, field_schema):
+        field_schema.update(type="string")
+
 
 class TaskRead(BaseModel):
     id: Optional[PyObjectId] = Field(alias='_id')
