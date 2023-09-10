@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import TaskList from '../components/TaskList';
+import { fetchGetAllTask } from '../api/api';
+import axios from 'axios';
 
 
 function Home() {
@@ -8,21 +9,19 @@ function Home() {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
+
     async function fetchTasks() {
-      const res = await axios.get("http://localhost:8080/api/tasks");
-      setTasks(res.data)
+      fetchGetAllTask()
+      .then((res) => {
+        setTasks(res.data)
+      })
     }
-    
+
     fetchTasks();
-  
   }, [])
 
-  return (
-    <div>
-        <h1>Home</h1>
-        <TaskList tasks={tasks}/>
-    </div>
-  )
+  return <TaskList tasks={tasks}/>;
+
 }
 
 export default Home

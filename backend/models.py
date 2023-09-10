@@ -21,7 +21,7 @@ class TaskRead(BaseModel):
     id: Optional[PyObjectId] = Field(alias='_id')
     title: str
     description: Optional[str] = None
-    status: bool = False
+    status_task: bool = False
     created_at: datetime = datetime.now()
     updated_at: datetime = datetime.now()
 
@@ -36,7 +36,7 @@ class TaskRead(BaseModel):
 class TaskWrite(BaseModel):
     title: str
     description: Optional[str] = None
-    status: bool = False
+    status_task: bool = False
     created_at: datetime = datetime.now()
     updated_at: datetime = datetime.now()
 
@@ -51,7 +51,7 @@ class TaskWrite(BaseModel):
 class UpdateTask(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
-    status: Optional[bool] = None
+    status_task: Optional[bool] = None
     updated_at: Optional[datetime] = datetime.now()
 
     class Config:
