@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field, ValidationError, validator
+import re
+from pydantic import BaseModel, Field, validator, EmailStr
 from typing import Optional
 from bson import ObjectId
 from datetime import datetime
@@ -52,11 +53,90 @@ class TaskWrite(BaseModel):
         }
 
 
-class UpdateTask(BaseModel):
+class TaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     status_task: Optional[bool] = None
     updated_at: Optional[datetime] = datetime.now()
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        json_encoders = {
+            ObjectId: str
+        }
+
+
+class UserRead(BaseModel):
+    id: Optional[PyObjectId] = Field(alias='_id')
+    email: str
+    password: str
+    nome: Optional[str]
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        json_encoders = {
+            ObjectId: str
+        }
+
+class UserWrite(BaseModel):
+    email: EmailStr
+    password: str
+    nome: str
+
+    # Validando campo Username
+    @validator('nome')
+    def validate_username(cls, value):
+        if not re.match("[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ']", 'value'):  
+            raise ValueError('Nome com formato inválido')
+        return value
+    
+    # # Validando campo Username
+    # @validator('email')
+    # def validate_email(cls, value):
+    #     if not re.match('^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$', 'value'):
+    #         raise ValueError('Email com formato inválido')
+    #    return value
+    
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        json_encoders = {
+            ObjectId: str
+        }
+
+
+class UserUpdate(BaseModel):
+    email: str
+    password: str
+    nome: Optional[str]
+
+    # Validando campo Username
+    @validator('nome')
+    def validatee_username(cls, value):
+        if not re.match("^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ-']+$", 'value'):  
+            raise ValueError('Username com formato inválido')
+        return value
+    
+    # Validando campo Username
+    @validator('email')
+    def validate_email(cls, value):
+        if not re.match('^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$', 'value'):
+            raise ValueError('Username com formato inválido')
+        return value
+    
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        json_encoders = {
+            ObjectId: str
+        }
+
+
+class LoginUser(BaseModel):
+    email: str
+    password: str
 
     class Config:
         orm_mode = True
