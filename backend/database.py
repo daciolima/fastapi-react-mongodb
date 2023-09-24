@@ -76,6 +76,8 @@ async def get_one_user_id(id):
 
 async def get_one_user_email(email):
     user = await CollectionUser.find_one({'email': email})
+    if not user:
+        False
     return user
 
 # Retorna todos os elementos

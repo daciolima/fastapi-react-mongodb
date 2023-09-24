@@ -1,26 +1,34 @@
-from fastapi import HTTPException, status, APIRouter
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import HTTPException, status, APIRouter, Depends
 from fastapi.responses import JSONResponse
-from models import UserRead, UserWrite, UserUpdate, LoginUser
+from models import UserRead, UserWrite, UserUpdate, UserLogin, UserAccess
 from database import get_users_all, get_one_user_id, create_new_user, \
     update_user, delete_user, get_one_user_email
+from auth.auth import verify_token, user_validation_login, is_token_blacklisted, revoke_token
+
 from passlib.context import CryptContext
-# from passlib.hash import sha256_crypt
+from decouple import config
+
 
 user_router = APIRouter()
 
+oauth_scheme = OAuth2PasswordBearer(tokenUrl='api/login')
+
 crypt_context = CryptContext(schemes=['sha256_crypt'])
 
+SECRET_KEY = config('SECRET_KEY')
+ALGORITHM = config('ALGORITHM')
 
 # Retorna todos os users
-@user_router .get('/api/users')
-async def get_users():
+@user_router.get('/api/users')
+async def get_users(access_token: str = Depends(verify_token)):
     users = await get_users_all()
     return users
 
 
 # Retorna um user
 @user_router.get('/api/users/{id}', response_model=UserRead)
-async def get_one_user(id: str):
+async def get_one_user(id: str, access_token: str = Depends(verify_token)):
     user = await get_one_user_id(id)
     if user:
         return user
@@ -66,10 +74,32 @@ async def remove_user(id: str):
         return HTTPException(204, "Not Content.")
     raise HTTPException(404, f"Não existe user com esse ID: {id}")
 
-# # Login
-# @user_router.post('/api/users/login', response_model=UserRead)
-# async def login_user(user: LoginUser):
-#     user = await access_login_user(id)
-#     if user:
-#         return user
-#     raise HTTPException(404, f"Não existe user com esse ID: {id}")
+
+# Login
+@user_router.post('/api/users/login', response_model=UserAccess)
+async def login_user(user: UserLogin):
+
+    is_user_valid = await user_validation_login(user)
+
+    print(is_user_valid)
+
+    if not is_user_valid:
+        raise HTTPException(detail=f"Email ou senha inválido.", status_code=status.HTTP_401_UNAUTHORIZED)
+
+    return is_user_valid
+
+
+# Rota para efetuar logoff (invalidar o token JWT)
+@user_router.post('/api/users/logoff')
+async def logout(token: str = Depends(OAuth2PasswordBearer(tokenUrl='api/login')), access_token: str = Depends(verify_token)):
+    # Neste exemplo, adicionamos o token à lista negra
+    # Em um aplicativo real, você deve armazenar e consultar essa lista de maneira mais eficiente
+    revoke_token(token)
+    if is_token_blacklisted(token):
+        raise HTTPException(status_code=200, detail="Token invalidado com sucesso")
+
+
+
+
+
+

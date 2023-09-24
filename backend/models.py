@@ -70,7 +70,6 @@ class TaskUpdate(BaseModel):
 class UserRead(BaseModel):
     id: Optional[PyObjectId] = Field(alias='_id')
     email: str
-    password: str
     nome: Optional[str]
 
     class Config:
@@ -134,13 +133,22 @@ class UserUpdate(BaseModel):
         }
 
 
-class LoginUser(BaseModel):
+class UserLogin(BaseModel):
     email: str
     password: str
 
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
-        json_encoders = {
-            ObjectId: str
-        }
+
+
+class UserAccess(BaseModel):
+    email: str
+    access_token: str
+    exp: datetime
+    
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+   
