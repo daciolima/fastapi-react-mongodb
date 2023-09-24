@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from models import UserRead, UserWrite, UserUpdate, UserLogin, UserAccess
 from database import get_users_all, get_one_user_id, create_new_user, \
     update_user, delete_user, get_one_user_email
-from auth.auth import verify_token, user_validation_login, is_token_blacklisted, revoke_token
+from auth.auth import verify_token, user_validation_login, is_token_blocked, revoke_token
 
 from passlib.context import CryptContext
 from decouple import config
@@ -95,7 +95,7 @@ async def logout(token: str = Depends(OAuth2PasswordBearer(tokenUrl='api/login')
     # Neste exemplo, adicionamos o token à lista negra
     # Em um aplicativo real, você deve armazenar e consultar essa lista de maneira mais eficiente
     revoke_token(token)
-    if is_token_blacklisted(token):
+    if is_token_blocked(token):
         raise HTTPException(status_code=200, detail="Token invalidado com sucesso")
 
 

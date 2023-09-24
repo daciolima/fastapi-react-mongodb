@@ -43,7 +43,7 @@ async def user_validation_login(user):
 
 async def verify_token(access_token: str = Depends(OAuth2PasswordBearer(tokenUrl='api/login'))):
 
-    if is_token_blacklisted(access_token):
+    if is_token_blocked(access_token):
         raise HTTPException(status_code=401, detail="Token inválido")
     try:
         data = jwt.decode(access_token, config('SECRET_KEY'), algorithms=[config('ALGORITHM')])
@@ -70,17 +70,15 @@ def token_verifier(token = Depends(oauth_scheme)):
 
 fake_access_token = []
 
-# Função para verificar se um token está na lista negra (invalidado)
+# Revogar token
 def revoke_token(token: str):
-    # Neste exemplo, usamos uma lista simples de tokens inválidos
-    # Em um aplicativo real, você deve armazenar e consultar essa lista de maneira mais eficiente
+
     fake_access_token.append(token)
     print(fake_access_token)
     return token in fake_access_token
 
-# Função para verificar se um token está na lista negra (invalidado)
-def is_token_blacklisted(token: str):
-    # Neste exemplo, usamos uma lista simples de tokens inválidos
-    # Em um aplicativo real, você deve armazenar e consultar essa lista de maneira mais eficiente
+# Verificar se um token está invalidado
+def is_token_blocked(token: str):
+
     return token in fake_access_token
 
